@@ -5,6 +5,6 @@
  * @author Varzhak
  *
  */
-module calculator {
+/*module calculator {
 	requires java.desktop;
-}
+}*/
