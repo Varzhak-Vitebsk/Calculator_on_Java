@@ -22,11 +22,11 @@ public final class Calculator {
 	// Main class. Creates and fills parent frame.
 	
 	private JFrame main_frame;
-	private int frame_width, frame_height;
 	private double left_operand, right_operand;
 	private boolean left_in_use;
 	private byte left_dot_flag, left_fràction_digits, right_dot_flag, right_fraction_digits;
 	private JLabel display;
+	private Object current_operator;
 	
 	private final int MIN_FRAME_WIDTH = 270;
 	private final int MIN_FRAME_HEIGHT = 200;
@@ -45,19 +45,20 @@ public final class Calculator {
 		left_fràction_digits = 0;
 		right_dot_flag = 0;
 		right_fraction_digits = 0;
+		current_operator = null;
+		
 		main_frame = new JFrame("Calculator");
 		main_frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment()
 				.getDefaultScreenDevice();
-		frame_width = gd.getDisplayMode().getWidth() / PART_OF_DEVICE_DISPLAY;
-		frame_height = gd.getDisplayMode().getHeight() / PART_OF_DEVICE_DISPLAY;
 		main_frame.setMinimumSize(new Dimension(MIN_FRAME_WIDTH, MIN_FRAME_HEIGHT));
 		main_frame.setPreferredSize(new Dimension(MIN_FRAME_WIDTH, MIN_FRAME_HEIGHT));
-		main_frame.setLocation(frame_width, frame_height);
+		main_frame.setLocation(gd.getDisplayMode().getWidth() / PART_OF_DEVICE_DISPLAY
+				, gd.getDisplayMode().getHeight() / PART_OF_DEVICE_DISPLAY);
 		main_frame.setResizable(false);
 		JPanel back_panel = new JPanel(new GridBagLayout());
 		back_panel.setBackground(Color.WHITE);
-		createStandartUI(back_panel);		
+		createStandardUI(back_panel);		
 		main_frame.add(back_panel);
 	}
 	
@@ -65,9 +66,9 @@ public final class Calculator {
 		main_frame.setVisible(true);
 	}
 	
-	private void createStandartUI(JPanel back_panel) {
-		
-		// Create and fill display panel
+	private void createStandardUI(JPanel back_panel) {
+		// Creates standard UI which includes display, digit buttons and basic operator buttons 
+		// Creates and fills display panel
 		JPanel display_panel = new JPanel(new GridBagLayout());
 		display_panel.setBorder(BorderFactory.createLineBorder(Color.black));
 		display = new JLabel("0", SwingConstants.RIGHT);
@@ -77,7 +78,7 @@ public final class Calculator {
 		constraits.weightx = 0.5;		
 		display_panel.add(display, constraits);
 		
-		// Create and fill digit buttons panel
+		// Creates and fills digit buttons panel
 		JPanel symbol_buttons_panel = new JPanel(new GridBagLayout());
 		symbol_buttons_panel.setBorder(BorderFactory.createLineBorder(Color.black));
 		constraits.insets = new Insets(BORDER_OF_INNERPANEL
@@ -105,24 +106,52 @@ public final class Calculator {
 		button.addActionListener(new DotButtonActionListener());
 		symbol_buttons_panel.add(button, constraits);
 		
-		// Create and fill operator buttons panel
+		// Creates and fills operator buttons panel
 		JPanel operator_buttons_panel = new JPanel(new GridBagLayout());
 		operator_buttons_panel.setBorder(BorderFactory.createLineBorder(Color.black));
+		
+		
 		constraits.gridy = 0;
 		operator_buttons_panel.add(new JButton("Del"), constraits);
-		operator_buttons_panel.add(new JButton("C"), constraits);
+		var clear_button_listener = new ClearButtonActionListener();
+		button = new JButton("C");
+		button.setActionCommand("C");
+		button.addActionListener(clear_button_listener);
+		operator_buttons_panel.add(button, constraits);
+		
+		var operator_button_listener = new OperatorButtonActionListener();
 		constraits.gridy = 1;		
 		constraits.gridwidth = 1;
-		operator_buttons_panel.add(new JButton("/"), constraits);
-		operator_buttons_panel.add(new JButton("*"), constraits);		
-		constraits.gridy = 2;		
-		operator_buttons_panel.add(new JButton("-"), constraits);
-		operator_buttons_panel.add(new JButton("+"), constraits);		
+		button = new JButton("/");
+		button.setActionCommand("/");
+		button.addActionListener(operator_button_listener);
+		operator_buttons_panel.add(button, constraits);
+		
+		button = new JButton("*");
+		button.setActionCommand("*");
+		button.addActionListener(operator_button_listener);
+		operator_buttons_panel.add(button, constraits);	
+		
+		constraits.gridy = 2;
+		button = new JButton("-");
+		button.setActionCommand("-");
+		button.addActionListener(operator_button_listener);
+		operator_buttons_panel.add(button, constraits);
+		
+		button = new JButton("+");
+		button.setActionCommand("+");
+		button.addActionListener(operator_button_listener);
+		operator_buttons_panel.add(button, constraits);	
+		
 		constraits.gridy = 3;		
 		constraits.gridwidth = GridBagConstraints.REMAINDER;
-		operator_buttons_panel.add(new JButton("="), constraits);
+		var result_button_listener = new ResultButtonActionListener();
+		button = new JButton("=");
+		button.setActionCommand("=");
+		button.addActionListener(result_button_listener);
+		operator_buttons_panel.add(button, constraits);		
 		
-		// Fill frame back panel		
+		// Fills frame back panel		
 		constraits.gridy = 0;		
 		constraits.gridwidth = 5;
 		constraits.insets = new Insets(BORDER_OF_BACKPANEL
@@ -181,7 +210,95 @@ public final class Calculator {
 				else display.setText(display.getText().substring(0, display.getText().length() - 1));
 				right_dot_flag ^= 1;
 			}
+		}		
+	}
+	
+	private class OperatorButtonActionListener implements ActionListener{
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			current_operator = e.getSource();
+			if(left_in_use) {
+				left_in_use = false;
+				display.setText("0");
+			}
+			else {
+				switch(e.getActionCommand()) {
+				case("+"):
+					left_operand += right_operand;
+					break;
+				case("-"):
+					left_operand -= right_operand;
+					break;
+				case("*"):
+					left_operand *= right_operand;
+					break;
+				case("/"):
+					left_operand /= right_operand;
+					break;
+				case("C"):
+					left_operand = 0;
+					left_fràction_digits = 0;
+					left_in_use = true;
+					break;
+				}				
+				if (left_operand == Math.floor(left_operand)) {
+					left_dot_flag = 0;
+					left_fràction_digits = 0;
+					display.setText(String.valueOf(left_operand).substring(0, String.valueOf(left_operand).length() - 2));
+				}
+				else {
+					left_dot_flag = 1;
+					int fraction_digits = (display.getText().length() - display.getText().indexOf("."));
+					left_fràction_digits = (fraction_digits > 127 ? 127 : (byte)fraction_digits);
+					display.setText(String.valueOf(left_operand));
+				}
+				right_operand = 0;
+				right_fraction_digits = 0;
+				right_dot_flag = 0;
+			}
 		}
-		
+	}
+	
+	private class ResultButtonActionListener implements ActionListener{
+
+		@Override
+		public void actionPerformed(ActionEvent event) {
+			if(current_operator == null) return;
+			try {
+				JButton button = (JButton)current_operator;
+				ActionListener[] listners = button.getActionListeners();
+				listners[0].actionPerformed(new ActionEvent(button, ActionEvent.ACTION_FIRST, button.getActionCommand()));
+			}
+			catch(ClassCastException e) {
+				// must think of some action
+			}			
+			left_in_use = true;
+			current_operator = null;
+		}
+	}
+	
+	private class ClearButtonActionListener implements ActionListener{
+
+		@Override
+		public void actionPerformed(ActionEvent event) {
+			left_operand = 0;
+			left_fràction_digits = 0;
+			right_operand = 0;
+			right_fraction_digits = 0;
+			left_dot_flag = 0;
+			right_dot_flag = 0;
+			left_in_use = true;
+			current_operator = null;
+			display.setText("0");
+		}
+	}
+	
+	private class DeleteButtonActionListener implements ActionListener{
+
+		@Override
+		public void actionPerformed(ActionEvent event) {
+			
+		}
 	}
 }
