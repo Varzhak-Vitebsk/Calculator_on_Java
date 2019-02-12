@@ -24,9 +24,10 @@ public final class Calculator {
 	private JFrame main_frame;
 	private double left_operand, right_operand;
 	private boolean left_in_use;
-	private byte left_dot_flag, left_fràction_digits, right_dot_flag, right_fraction_digits;
+	private byte right_operator_input_flag;
 	private JLabel display;
-	private Object current_operator;
+	private Object current_operator_object;
+	private String current_operator;
 	
 	private final int MIN_FRAME_WIDTH = 270;
 	private final int MIN_FRAME_HEIGHT = 200;
@@ -41,11 +42,9 @@ public final class Calculator {
 		left_operand = 0;
 		right_operand = 0;
 		left_in_use = true;
-		left_dot_flag = 0;
-		left_fràction_digits = 0;
-		right_dot_flag = 0;
-		right_fraction_digits = 0;
-		current_operator = null;
+		right_operator_input_flag = 0;
+		current_operator_object = null;
+		current_operator = "";
 		
 		main_frame = new JFrame("Calculator");
 		main_frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -112,11 +111,14 @@ public final class Calculator {
 		
 		
 		constraits.gridy = 0;
-		operator_buttons_panel.add(new JButton("Del"), constraits);
-		var clear_button_listener = new ClearButtonActionListener();
+		button = new JButton("Del");
+		button.setActionCommand("Del");
+		button.addActionListener(new DeleteButtonActionListener());
+		operator_buttons_panel.add(button, constraits);
+		
 		button = new JButton("C");
 		button.setActionCommand("C");
-		button.addActionListener(clear_button_listener);
+		button.addActionListener(new ClearButtonActionListener());
 		operator_buttons_panel.add(button, constraits);
 		
 		var operator_button_listener = new OperatorButtonActionListener();
@@ -145,10 +147,9 @@ public final class Calculator {
 		
 		constraits.gridy = 3;		
 		constraits.gridwidth = GridBagConstraints.REMAINDER;
-		var result_button_listener = new ResultButtonActionListener();
 		button = new JButton("=");
 		button.setActionCommand("=");
-		button.addActionListener(result_button_listener);
+		button.addActionListener(new ResultButtonActionListener());
 		operator_buttons_panel.add(button, constraits);		
 		
 		// Fills frame back panel		
@@ -170,28 +171,22 @@ public final class Calculator {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {			
-			byte digit = 10;
 			if(left_in_use) {
-				if (left_dot_flag == 1) {
-					++left_fràction_digits;
-					digit = 1;
-				}
 				if(display.getText().length() >= DISPLAY_SYMBOL_LIMIT) return;
-				if((left_operand == 0) && (left_dot_flag == 0)) display.setText(e.getActionCommand());
+				if((left_operand == 0)
+						&& (display.getText().indexOf(".") == - 1)
+						&& (Double.valueOf(display.getText()) == 0))
+					display.setText(e.getActionCommand());
 				else display.setText(display.getText() + e.getActionCommand());
-				left_operand *= digit;
-				left_operand += Double.valueOf(e.getActionCommand()) * Math.pow(10, -left_fràction_digits);				
 			}
 			else {
-				if (right_dot_flag == 1) {
-					++right_fraction_digits;
-					digit = 1;
+				if (right_operator_input_flag == 0) {
+					right_operator_input_flag ^= 1;
+					display.setText(e.getActionCommand());
+					
 				}
-				if(display.getText().length() >= DISPLAY_SYMBOL_LIMIT) return;
-				if((right_operand == 0) && (right_dot_flag == 0)) display.setText(e.getActionCommand());
+				else if(display.getText().length() >= DISPLAY_SYMBOL_LIMIT) return;
 				else display.setText(display.getText() + e.getActionCommand());
-				right_operand *= digit;
-				right_operand += Double.valueOf(e.getActionCommand()) * Math.pow(10, -right_fraction_digits);
 			}			
 		}		
 	}
@@ -199,17 +194,13 @@ public final class Calculator {
 	private class DotButtonActionListener implements ActionListener{
 
 		@Override
-		public void actionPerformed(ActionEvent e) {			
-			if((left_in_use) && (left_fràction_digits == 0)) {
-				if (left_dot_flag == 0) display.setText(display.getText() + e.getActionCommand());
-				else display.setText(display.getText().substring(0, display.getText().length() - 1)); 
-				left_dot_flag ^= 1;
+		public void actionPerformed(ActionEvent e) {
+			if(display.getText().indexOf(".") == display.getText().length() - 1) {
+				display.setText(display.getText().substring(0, display.getText().length() - 1));
+				return;
 			}
-			if((!left_in_use) && (right_fraction_digits == 0)) {
-				if (right_dot_flag == 0) display.setText(display.getText() + e.getActionCommand());
-				else display.setText(display.getText().substring(0, display.getText().length() - 1));
-				right_dot_flag ^= 1;
-			}
+			if(display.getText().indexOf(".") == - 1)
+				display.setText(display.getText() + ".");
 		}		
 	}
 	
@@ -217,13 +208,15 @@ public final class Calculator {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			current_operator = e.getSource();
+			current_operator_object = e.getSource();
 			if(left_in_use) {
 				left_in_use = false;
+				left_operand = Double.valueOf(display.getText());
 				display.setText("0");
 			}
 			else {
-				switch(e.getActionCommand()) {
+				right_operand = Double.valueOf(display.getText());
+				switch(current_operator.length() == 0 ? e.getActionCommand() : current_operator) {
 				case("+"):
 					left_operand += right_operand;
 					break;
@@ -238,25 +231,21 @@ public final class Calculator {
 					break;
 				case("C"):
 					left_operand = 0;
-					left_fràction_digits = 0;
 					left_in_use = true;
 					break;
-				}				
-				if (left_operand == Math.floor(left_operand)) {
-					left_dot_flag = 0;
-					left_fràction_digits = 0;
-					display.setText(String.valueOf(left_operand).substring(0, String.valueOf(left_operand).length() - 2));
 				}
-				else {
-					left_dot_flag = 1;
-					int fraction_digits = (display.getText().length() - display.getText().indexOf("."));
-					left_fràction_digits = (fraction_digits > 127 ? 127 : (byte)fraction_digits);
-					display.setText(String.valueOf(left_operand));
+				display.setText(String.valueOf(left_operand));
+				//Rounding display if number is integer
+				if (left_operand == Math.floor(left_operand)){
+					if (display.getText().indexOf("E") == -1) {
+						display.setText(display.getText().
+								substring(0, display.getText().length() - 2));
+					}
 				}
 				right_operand = 0;
-				right_fraction_digits = 0;
-				right_dot_flag = 0;
+				right_operator_input_flag = 0;
 			}
+			current_operator = e.getActionCommand();
 		}
 	}
 	
@@ -264,9 +253,9 @@ public final class Calculator {
 
 		@Override
 		public void actionPerformed(ActionEvent event) {
-			if(current_operator == null) return;
+			if(current_operator_object == null) return;
 			try {
-				JButton button = (JButton)current_operator;
+				JButton button = (JButton)current_operator_object;
 				ActionListener[] listners = button.getActionListeners();
 				listners[0].actionPerformed(new ActionEvent(button, ActionEvent.ACTION_FIRST, button.getActionCommand()));
 			}
@@ -274,7 +263,8 @@ public final class Calculator {
 				// must think of some action
 			}			
 			left_in_use = true;
-			current_operator = null;
+			current_operator_object = null;
+			current_operator = "";
 		}
 	}
 	
@@ -283,13 +273,11 @@ public final class Calculator {
 		@Override
 		public void actionPerformed(ActionEvent event) {
 			left_operand = 0;
-			left_fràction_digits = 0;
 			right_operand = 0;
-			right_fraction_digits = 0;
-			left_dot_flag = 0;
-			right_dot_flag = 0;
+			right_operator_input_flag = 0;
 			left_in_use = true;
-			current_operator = null;
+			current_operator_object = null;
+			current_operator = "";
 			display.setText("0");
 		}
 	}
@@ -298,7 +286,14 @@ public final class Calculator {
 
 		@Override
 		public void actionPerformed(ActionEvent event) {
-			
+			if(display.getText().length() == 1)
+				display.setText("0");
+			if(display.getText().length() > 1)
+				display.setText(display.getText().substring(0, display.getText().length() - 1));
+				if(display.getText().indexOf(".") == display.getText().length() - 1)
+					display.setText(display.getText().substring(0, display.getText().length() - 1));
+			if(left_in_use) left_operand = Double.valueOf(display.getText());
+			else right_operand = Double.valueOf(display.getText());
 		}
 	}
 }
