@@ -10,12 +10,16 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 
 public final class Calculator {
@@ -90,6 +94,14 @@ public final class Calculator {
 				JButton button = new JButton(String.valueOf(ind - 3 * row));
 				button.setActionCommand(String.valueOf(ind - 3 * row));
 				button.addActionListener(symbol_button_listener);
+				button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+					.put(KeyStroke.getKeyStroke(String.valueOf(ind - 3 * row)), "pressed");
+				button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+					.put(KeyStroke.getKeyStroke("released " + String.valueOf(ind - 3 * row)), "released");
+				button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+				.put(KeyStroke.getKeyStroke("NUMPAD" + String.valueOf(ind - 3 * row)), "pressed");
+			button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+				.put(KeyStroke.getKeyStroke("released NUMPAD" + String.valueOf(ind - 3 * row)), "released");
 				constraits.gridy = row;
 				symbol_buttons_panel.add(button, constraits);
 			}
@@ -97,12 +109,32 @@ public final class Calculator {
 		JButton button = new JButton("0");
 		button.setActionCommand("0");
 		button.addActionListener(symbol_button_listener);
+		button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+			.put(KeyStroke.getKeyStroke("0"), "pressed");
+		button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+			.put(KeyStroke.getKeyStroke("released 0"), "released");
+		button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+			.put(KeyStroke.getKeyStroke("NUMPAD0"), "pressed");
+		button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+			.put(KeyStroke.getKeyStroke("released NUMPAD0"), "released");
 		constraits.gridy = 3;
 		constraits.gridwidth = GridBagConstraints.RELATIVE;
 		symbol_buttons_panel.add(button, constraits);
 		button = new JButton(".");
 		button.setActionCommand(".");
 		button.addActionListener(new DotButtonActionListener());
+		button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+			.put(KeyStroke.getKeyStroke("typed ."), "pressed");
+		button.getInputMap(/*JComponent.WHEN_IN_FOCUSED_WINDOW*/)
+			.put(KeyStroke.getKeyStroke("released PERIOD"), "released");
+		button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+			.put(KeyStroke.getKeyStroke("typed ,"), "pressed");
+		button.getInputMap(/*JComponent.WHEN_IN_FOCUSED_WINDOW*/)
+			.put(KeyStroke.getKeyStroke("released COMMA"), "released");
+		button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+			.put(KeyStroke.getKeyStroke((char)KeyEvent.VK_SEPARATOR), "pressed");
+		button.getInputMap(/*JComponent.WHEN_IN_FOCUSED_WINDOW*/)
+			.put(KeyStroke.getKeyStroke("released DECIMAL"), "released");
 		symbol_buttons_panel.add(button, constraits);
 		
 		// Creates and fills operator buttons panel
@@ -114,11 +146,19 @@ public final class Calculator {
 		button = new JButton("Del");
 		button.setActionCommand("Del");
 		button.addActionListener(new DeleteButtonActionListener());
+		button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+			.put(KeyStroke.getKeyStroke((char)KeyEvent.VK_DELETE), "pressed");
+		button.getInputMap(/*JComponent.WHEN_IN_FOCUSED_WINDOW*/)
+			.put(KeyStroke.getKeyStroke("released DELETE"), "released");
 		operator_buttons_panel.add(button, constraits);
 		
 		button = new JButton("C");
 		button.setActionCommand("C");
 		button.addActionListener(new ClearButtonActionListener());
+		button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+			.put(KeyStroke.getKeyStroke("typed c"), "pressed");
+		button.getInputMap(/*JComponent.WHEN_IN_FOCUSED_WINDOW*/)
+			.put(KeyStroke.getKeyStroke("released C"), "released");
 		operator_buttons_panel.add(button, constraits);
 		
 		var operator_button_listener = new OperatorButtonActionListener();
@@ -127,22 +167,44 @@ public final class Calculator {
 		button = new JButton("/");
 		button.setActionCommand("/");
 		button.addActionListener(operator_button_listener);
+		button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+			.put(KeyStroke.getKeyStroke("typed /"), "pressed");
+		button.getInputMap(/*JComponent.WHEN_IN_FOCUSED_WINDOW*/)
+			.put(KeyStroke.getKeyStroke("released DIVIDE"), "released");
+		button.getInputMap(/*JComponent.WHEN_IN_FOCUSED_WINDOW*/)
+			.put(KeyStroke.getKeyStroke("released SLASH"), "released");
 		operator_buttons_panel.add(button, constraits);
 		
 		button = new JButton("*");
 		button.setActionCommand("*");
 		button.addActionListener(operator_button_listener);
+		button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+			.put(KeyStroke.getKeyStroke("typed *"), "pressed");
+		button.getInputMap(/*JComponent.WHEN_IN_FOCUSED_WINDOW*/)
+			.put(KeyStroke.getKeyStroke("released MULTIPLY"), "released");
 		operator_buttons_panel.add(button, constraits);	
 		
 		constraits.gridy = 2;
 		button = new JButton("-");
 		button.setActionCommand("-");
 		button.addActionListener(operator_button_listener);
+		button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+			.put(KeyStroke.getKeyStroke("typed -"), "pressed");
+		button.getInputMap(/*JComponent.WHEN_IN_FOCUSED_WINDOW*/)
+			.put(KeyStroke.getKeyStroke("released MINUS"), "released");
+		button.getInputMap(/*JComponent.WHEN_IN_FOCUSED_WINDOW*/)
+			.put(KeyStroke.getKeyStroke("released SUBTRACT"), "released");
 		operator_buttons_panel.add(button, constraits);
 		
 		button = new JButton("+");
 		button.setActionCommand("+");
 		button.addActionListener(operator_button_listener);
+		button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+			.put(KeyStroke.getKeyStroke("typed +"), "pressed");
+		button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+			.put(KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, InputEvent.SHIFT_DOWN_MASK, true), "released");
+		button.getInputMap(/*JComponent.WHEN_IN_FOCUSED_WINDOW*/)
+			.put(KeyStroke.getKeyStroke("released ADD"), "released");
 		operator_buttons_panel.add(button, constraits);	
 		
 		constraits.gridy = 3;		
@@ -150,6 +212,14 @@ public final class Calculator {
 		button = new JButton("=");
 		button.setActionCommand("=");
 		button.addActionListener(new ResultButtonActionListener());
+		button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+			.put(KeyStroke.getKeyStroke("typed ="), "pressed");
+		button.getInputMap(/*JComponent.WHEN_IN_FOCUSED_WINDOW*/)
+			.put(KeyStroke.getKeyStroke("released EQUALS"), "released");
+		button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+			.put(KeyStroke.getKeyStroke("ENTER"), "pressed");
+		button.getInputMap(/*JComponent.WHEN_IN_FOCUSED_WINDOW*/)
+			.put(KeyStroke.getKeyStroke("released ENTER"), "released");
 		operator_buttons_panel.add(button, constraits);		
 		
 		// Fills frame back panel		
@@ -195,6 +265,8 @@ public final class Calculator {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			if(display.getText().contains("NaN")) return;
+			if(display.getText().contains("Infinity")) return;
 			if(display.getText().indexOf(".") == display.getText().length() - 1) {
 				display.setText(display.getText().substring(0, display.getText().length() - 1));
 				return;
