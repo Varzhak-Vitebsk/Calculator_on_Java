@@ -27,7 +27,7 @@ public final class Calculator {
 	
 	private JFrame main_frame;
 	private double left_operand, right_operand;
-	private boolean left_in_use;
+	private boolean left_in_use, compute_in_progress;
 	private byte right_operator_input_flag;
 	private JLabel display;
 	private Object current_operator_object;
@@ -35,17 +35,19 @@ public final class Calculator {
 	
 	private final int MIN_FRAME_WIDTH = 270;
 	private final int MIN_FRAME_HEIGHT = 200;
-	private final int PART_OF_DEVICE_DISPLAY = 4;
+	private final int PART_OF_DEVICE_DISPLAY = 3;
 	private final int SIZE_OF_DISPLAY_FONT = 20;
 	private final int BORDER_OF_BACKPANEL = 5;
 	private final int BORDER_OF_INNERPANEL = 1;
 	private final int DISPLAY_SYMBOL_LIMIT = 20;
+	private final byte PLUS_BUTTON_INDEX = 61; 
 	
 	public Calculator() {
 		
 		left_operand = 0;
 		right_operand = 0;
 		left_in_use = true;
+		compute_in_progress = false;
 		right_operator_input_flag = 0;
 		current_operator_object = null;
 		current_operator = "";
@@ -125,15 +127,15 @@ public final class Calculator {
 		button.addActionListener(new DotButtonActionListener());
 		button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
 			.put(KeyStroke.getKeyStroke("typed ."), "pressed");
-		button.getInputMap(/*JComponent.WHEN_IN_FOCUSED_WINDOW*/)
+		button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
 			.put(KeyStroke.getKeyStroke("released PERIOD"), "released");
 		button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
 			.put(KeyStroke.getKeyStroke("typed ,"), "pressed");
-		button.getInputMap(/*JComponent.WHEN_IN_FOCUSED_WINDOW*/)
+		button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
 			.put(KeyStroke.getKeyStroke("released COMMA"), "released");
 		button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
 			.put(KeyStroke.getKeyStroke((char)KeyEvent.VK_SEPARATOR), "pressed");
-		button.getInputMap(/*JComponent.WHEN_IN_FOCUSED_WINDOW*/)
+		button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
 			.put(KeyStroke.getKeyStroke("released DECIMAL"), "released");
 		symbol_buttons_panel.add(button, constraits);
 		
@@ -148,7 +150,7 @@ public final class Calculator {
 		button.addActionListener(new DeleteButtonActionListener());
 		button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
 			.put(KeyStroke.getKeyStroke((char)KeyEvent.VK_DELETE), "pressed");
-		button.getInputMap(/*JComponent.WHEN_IN_FOCUSED_WINDOW*/)
+		button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
 			.put(KeyStroke.getKeyStroke("released DELETE"), "released");
 		operator_buttons_panel.add(button, constraits);
 		
@@ -157,7 +159,7 @@ public final class Calculator {
 		button.addActionListener(new ClearButtonActionListener());
 		button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
 			.put(KeyStroke.getKeyStroke("typed c"), "pressed");
-		button.getInputMap(/*JComponent.WHEN_IN_FOCUSED_WINDOW*/)
+		button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
 			.put(KeyStroke.getKeyStroke("released C"), "released");
 		operator_buttons_panel.add(button, constraits);
 		
@@ -169,9 +171,9 @@ public final class Calculator {
 		button.addActionListener(operator_button_listener);
 		button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
 			.put(KeyStroke.getKeyStroke("typed /"), "pressed");
-		button.getInputMap(/*JComponent.WHEN_IN_FOCUSED_WINDOW*/)
+		button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
 			.put(KeyStroke.getKeyStroke("released DIVIDE"), "released");
-		button.getInputMap(/*JComponent.WHEN_IN_FOCUSED_WINDOW*/)
+		button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
 			.put(KeyStroke.getKeyStroke("released SLASH"), "released");
 		operator_buttons_panel.add(button, constraits);
 		
@@ -180,7 +182,7 @@ public final class Calculator {
 		button.addActionListener(operator_button_listener);
 		button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
 			.put(KeyStroke.getKeyStroke("typed *"), "pressed");
-		button.getInputMap(/*JComponent.WHEN_IN_FOCUSED_WINDOW*/)
+		button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
 			.put(KeyStroke.getKeyStroke("released MULTIPLY"), "released");
 		operator_buttons_panel.add(button, constraits);	
 		
@@ -190,9 +192,9 @@ public final class Calculator {
 		button.addActionListener(operator_button_listener);
 		button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
 			.put(KeyStroke.getKeyStroke("typed -"), "pressed");
-		button.getInputMap(/*JComponent.WHEN_IN_FOCUSED_WINDOW*/)
+		button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
 			.put(KeyStroke.getKeyStroke("released MINUS"), "released");
-		button.getInputMap(/*JComponent.WHEN_IN_FOCUSED_WINDOW*/)
+		button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
 			.put(KeyStroke.getKeyStroke("released SUBTRACT"), "released");
 		operator_buttons_panel.add(button, constraits);
 		
@@ -202,8 +204,8 @@ public final class Calculator {
 		button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
 			.put(KeyStroke.getKeyStroke("typed +"), "pressed");
 		button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-			.put(KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, InputEvent.SHIFT_DOWN_MASK, true), "released");
-		button.getInputMap(/*JComponent.WHEN_IN_FOCUSED_WINDOW*/)
+			.put(KeyStroke.getKeyStroke(PLUS_BUTTON_INDEX, InputEvent.SHIFT_DOWN_MASK, true), "released");
+		button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
 			.put(KeyStroke.getKeyStroke("released ADD"), "released");
 		operator_buttons_panel.add(button, constraits);	
 		
@@ -214,11 +216,11 @@ public final class Calculator {
 		button.addActionListener(new ResultButtonActionListener());
 		button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
 			.put(KeyStroke.getKeyStroke("typed ="), "pressed");
-		button.getInputMap(/*JComponent.WHEN_IN_FOCUSED_WINDOW*/)
+		button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
 			.put(KeyStroke.getKeyStroke("released EQUALS"), "released");
 		button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
 			.put(KeyStroke.getKeyStroke("ENTER"), "pressed");
-		button.getInputMap(/*JComponent.WHEN_IN_FOCUSED_WINDOW*/)
+		button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
 			.put(KeyStroke.getKeyStroke("released ENTER"), "released");
 		operator_buttons_panel.add(button, constraits);		
 		
@@ -243,6 +245,11 @@ public final class Calculator {
 		public void actionPerformed(ActionEvent e) {			
 			if(left_in_use) {
 				if(display.getText().length() >= DISPLAY_SYMBOL_LIMIT) return;
+				if(!compute_in_progress) {
+					display.setText(e.getActionCommand());
+					compute_in_progress = true;
+					return;
+				}
 				if((left_operand == 0)
 						&& (display.getText().indexOf(".") == - 1)
 						&& (Double.valueOf(display.getText()) == 0))
@@ -307,7 +314,7 @@ public final class Calculator {
 					break;
 				}
 				display.setText(String.valueOf(left_operand));
-				//Rounding display if number is integer
+				//Rounding display information if number is integer
 				if (left_operand == Math.floor(left_operand)){
 					if (display.getText().indexOf("E") == -1) {
 						display.setText(display.getText().
@@ -335,6 +342,8 @@ public final class Calculator {
 				// must think of some action
 			}			
 			left_in_use = true;
+			compute_in_progress = false;
+			left_operand = 0;
 			current_operator_object = null;
 			current_operator = "";
 		}
