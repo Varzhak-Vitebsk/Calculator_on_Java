@@ -31,7 +31,7 @@ public final class Calculator {
 	private byte right_operator_input_flag;
 	private JLabel display;
 	private Object current_operator_object;
-	private String current_operator;
+//	private String current_operator;
 	
 	private final int MIN_FRAME_WIDTH = 270;
 	private final int MIN_FRAME_HEIGHT = 200;
@@ -50,7 +50,6 @@ public final class Calculator {
 		compute_in_progress = false;
 		right_operator_input_flag = 0;
 		current_operator_object = null;
-		current_operator = "";
 		
 		main_frame = new JFrame("Calculator");
 		main_frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -166,7 +165,7 @@ public final class Calculator {
 		var operator_button_listener = new OperatorButtonActionListener();
 		constraits.gridy = 1;		
 		constraits.gridwidth = 1;
-		button = new JButton("/");
+		button = new OperatorDivideButton("/");
 		button.setActionCommand("/");
 		button.addActionListener(operator_button_listener);
 		button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
@@ -177,7 +176,7 @@ public final class Calculator {
 			.put(KeyStroke.getKeyStroke("released SLASH"), "released");
 		operator_buttons_panel.add(button, constraits);
 		
-		button = new JButton("*");
+		button = new OperatorMultiplyButton("*");
 		button.setActionCommand("*");
 		button.addActionListener(operator_button_listener);
 		button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
@@ -187,7 +186,7 @@ public final class Calculator {
 		operator_buttons_panel.add(button, constraits);	
 		
 		constraits.gridy = 2;
-		button = new JButton("-");
+		button = new OperatorMinusButton("-");
 		button.setActionCommand("-");
 		button.addActionListener(operator_button_listener);
 		button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
@@ -198,7 +197,7 @@ public final class Calculator {
 			.put(KeyStroke.getKeyStroke("released SUBTRACT"), "released");
 		operator_buttons_panel.add(button, constraits);
 		
-		button = new JButton("+");
+		button = new OperatorPlusButton("+");
 		button.setActionCommand("+");
 		button.addActionListener(operator_button_listener);
 		button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
@@ -287,7 +286,6 @@ public final class Calculator {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			current_operator_object = e.getSource();
 			if(left_in_use) {
 				left_in_use = false;
 				left_operand = Double.valueOf(display.getText());
@@ -295,25 +293,15 @@ public final class Calculator {
 			}
 			else {
 				right_operand = Double.valueOf(display.getText());
-				switch(current_operator.length() == 0 ? e.getActionCommand() : current_operator) {
-				case("+"):
-					left_operand += right_operand;
-					break;
-				case("-"):
-					left_operand -= right_operand;
-					break;
-				case("*"):
-					left_operand *= right_operand;
-					break;
-				case("/"):
-					left_operand /= right_operand;
-					break;
-				case("C"):
-					left_operand = 0;
-					left_in_use = true;
-					break;
+				try {
+				left_operand = (current_operator_object == null 
+						? ((OperatorButton)e.getSource()).operationResult(left_operand, right_operand) 
+						: ((OperatorButton)current_operator_object).operationResult(left_operand, right_operand));
+				}catch(ClassCastException exception) {
+					// must think of some action
 				}
 				display.setText(String.valueOf(left_operand));
+				
 				//Rounding display information if number is integer
 				if (left_operand == Math.floor(left_operand)){
 					if (display.getText().indexOf("E") == -1) {
@@ -324,7 +312,7 @@ public final class Calculator {
 				right_operand = 0;
 				right_operator_input_flag = 0;
 			}
-			current_operator = e.getActionCommand();
+			current_operator_object = e.getSource();
 		}
 	}
 	
@@ -345,7 +333,6 @@ public final class Calculator {
 			compute_in_progress = false;
 			left_operand = 0;
 			current_operator_object = null;
-			current_operator = "";
 		}
 	}
 	
@@ -358,7 +345,6 @@ public final class Calculator {
 			right_operator_input_flag = 0;
 			left_in_use = true;
 			current_operator_object = null;
-			current_operator = "";
 			display.setText("0");
 		}
 	}
