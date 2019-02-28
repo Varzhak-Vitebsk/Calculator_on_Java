@@ -18,6 +18,7 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
@@ -31,7 +32,7 @@ public final class Calculator {
 	private byte right_operator_input_flag;
 	private JLabel display;
 	private Object current_operator_object;
-//	private String current_operator;
+	private JButton clear_button;
 	
 	private final int MIN_FRAME_WIDTH = 270;
 	private final int MIN_FRAME_HEIGHT = 200;
@@ -50,6 +51,7 @@ public final class Calculator {
 		compute_in_progress = false;
 		right_operator_input_flag = 0;
 		current_operator_object = null;
+		clear_button = null;
 		
 		main_frame = new JFrame("Calculator");
 		main_frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -154,6 +156,7 @@ public final class Calculator {
 		operator_buttons_panel.add(button, constraits);
 		
 		button = new JButton("C");
+		clear_button = button;
 		button.setActionCommand("C");
 		button.addActionListener(new ClearButtonActionListener());
 		button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
@@ -238,6 +241,13 @@ public final class Calculator {
 		back_panel.add(operator_buttons_panel, constraits);		
 	}
 	
+	private void runtimeExceptionCatch() {
+		JOptionPane.showMessageDialog(new JFrame(), "Something goes wrong...", "Dialog",
+		        JOptionPane.ERROR_MESSAGE);
+		ActionListener[] listners = clear_button.getActionListeners();
+		listners[0].actionPerformed(new ActionEvent(clear_button, ActionEvent.ACTION_FIRST, clear_button.getActionCommand()));		
+	}
+	
 	private class SymbolButtonActionListener implements ActionListener{
 
 		@Override
@@ -298,7 +308,7 @@ public final class Calculator {
 						? ((OperatorButton)e.getSource()).operationResult(left_operand, right_operand) 
 						: ((OperatorButton)current_operator_object).operationResult(left_operand, right_operand));
 				}catch(ClassCastException exception) {
-					// must think of some action
+					runtimeExceptionCatch();
 				}
 				display.setText(String.valueOf(left_operand));
 				
@@ -327,7 +337,7 @@ public final class Calculator {
 				listners[0].actionPerformed(new ActionEvent(button, ActionEvent.ACTION_FIRST, button.getActionCommand()));
 			}
 			catch(ClassCastException e) {
-				// must think of some action
+				runtimeExceptionCatch();
 			}			
 			left_in_use = true;
 			compute_in_progress = false;
