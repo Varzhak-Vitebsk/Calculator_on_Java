@@ -1,14 +1,29 @@
 package calculator;
 
+import calculator.display.DisplayTest;
+
 public class Launcher {
 
 	public static void main(String[] args) {
-		try {
-			Calculator calculator = new Calculator();
-			calculator.start();
+		for (String arg : args) {
+			switch (arg) {
+			case ("-t"):
+				try {
+					DisplayTest dt = new DisplayTest();
+					dt.start();
+				} catch (RuntimeException e) {
+					System.exit(1);
+				}
+				break;
+			}
 		}
-		catch(RuntimeException e) {
-			System.exit(1);
+		if (args.length == 0) {
+			try {
+				Calculator calculator = new Calculator();
+				calculator.start();
+			} catch (RuntimeException e) {
+				System.exit(1);
+			}
 		}
 	}
 

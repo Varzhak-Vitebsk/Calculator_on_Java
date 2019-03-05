@@ -23,6 +23,12 @@ import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 
+import calculator.buttons.OperatorButton;
+import calculator.buttons.OperatorDivideButton;
+import calculator.buttons.OperatorMinusButton;
+import calculator.buttons.OperatorMultiplyButton;
+import calculator.buttons.OperatorPlusButton;
+
 public final class Calculator {
 	// Main class. Creates and fills parent frame.
 	
@@ -34,9 +40,9 @@ public final class Calculator {
 	private Object current_operator_object;
 	private JButton clear_button;
 	
-	private final int MIN_FRAME_WIDTH = 270;
-	private final int MIN_FRAME_HEIGHT = 200;
-	private final int PART_OF_DEVICE_DISPLAY = 3;
+	public static final int MIN_FRAME_WIDTH = 270;
+	public static final int MIN_FRAME_HEIGHT = 200;
+	public static final int PART_OF_DEVICE_DISPLAY = 3;
 	private final int SIZE_OF_DISPLAY_FONT = 20;
 	private final int BORDER_OF_BACKPANEL = 5;
 	private final int BORDER_OF_INNERPANEL = 1;
@@ -245,7 +251,8 @@ public final class Calculator {
 		JOptionPane.showMessageDialog(new JFrame(), "Something goes wrong...", "Dialog",
 		        JOptionPane.ERROR_MESSAGE);
 		ActionListener[] listners = clear_button.getActionListeners();
-		listners[0].actionPerformed(new ActionEvent(clear_button, ActionEvent.ACTION_FIRST, clear_button.getActionCommand()));		
+		listners[0].actionPerformed(new ActionEvent(clear_button, ActionEvent.ACTION_FIRST
+				, clear_button.getActionCommand()));		
 	}
 	
 	private class SymbolButtonActionListener implements ActionListener{
