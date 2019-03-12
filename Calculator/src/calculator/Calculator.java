@@ -28,6 +28,7 @@ import calculator.buttons.OperatorDivideButton;
 import calculator.buttons.OperatorMinusButton;
 import calculator.buttons.OperatorMultiplyButton;
 import calculator.buttons.OperatorPlusButton;
+import calculator.display.SymbolDisplay;
 
 public final class Calculator {
 	// Main class. Creates and fills parent frame.
@@ -37,6 +38,7 @@ public final class Calculator {
 	private boolean left_in_use, compute_in_progress;
 	private byte right_operator_input_flag;
 	private JLabel display;
+//	private SymbolDisplay display;
 	private Object current_operator_object;
 	private JButton clear_button;
 	
@@ -84,6 +86,7 @@ public final class Calculator {
 		JPanel display_panel = new JPanel(new GridBagLayout());
 		display_panel.setBorder(BorderFactory.createLineBorder(Color.black));
 		display = new JLabel("0", SwingConstants.RIGHT);
+//		display = new SymbolDisplay();
 		display.setFont(new Font(Font.MONOSPACED, Font.BOLD, SIZE_OF_DISPLAY_FONT));
 		GridBagConstraints constraits = new GridBagConstraints();
 		constraits.fill = GridBagConstraints.HORIZONTAL;	
@@ -261,8 +264,11 @@ public final class Calculator {
 		public void actionPerformed(ActionEvent e) {			
 			if(left_in_use) {
 				if(display.getText().length() >= DISPLAY_SYMBOL_LIMIT) return;
+//				if(display.currentCapacity >= display.maxCapacity) return;
 				if(!compute_in_progress) {
 					display.setText(e.getActionCommand());
+//					display.nullify();
+//					display.addSymbol((e.getActionCommand());
 					compute_in_progress = true;
 					return;
 				}
