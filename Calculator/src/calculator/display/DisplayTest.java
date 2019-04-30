@@ -33,14 +33,16 @@ public class DisplayTest {
 	
 	public void start() {
 		main_frame.setVisible(true);
-//		display.replace("0123456789");
-//		JOptionPane.showMessageDialog(new JFrame(), "Test: 0123456789", "Dialog",
-//		        JOptionPane.INFORMATION_MESSAGE);
+		JOptionPane.showMessageDialog(new JFrame(), "Test Initialization: 0", "Dialog",
+		        JOptionPane.INFORMATION_MESSAGE);
+		display.replace("0123456789");
+		JOptionPane.showMessageDialog(new JFrame(), "Test: 0123456789", "Dialog",
+		        JOptionPane.INFORMATION_MESSAGE);
 		display.replace("0123456.789");
 		JOptionPane.showMessageDialog(new JFrame(), "Test: 0123456.789", "Dialog",
 		        JOptionPane.INFORMATION_MESSAGE);
-//		display.nullify();
-//		JOptionPane.showMessageDialog(new JFrame(), "Test: 0", "Dialog",
-//		        JOptionPane.INFORMATION_MESSAGE);
+		display.nullify();
+		JOptionPane.showMessageDialog(new JFrame(), "Test Nullify: 0", "Dialog",
+		        JOptionPane.INFORMATION_MESSAGE);
 	}
 }

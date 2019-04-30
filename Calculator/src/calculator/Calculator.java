@@ -274,18 +274,26 @@ public final class Calculator {
 				}
 				if((left_operand == 0)
 						&& (display.getText().indexOf(".") == - 1)
+//						&& (display.dotPosition() = -1)
 						&& (Double.valueOf(display.getText()) == 0))
+//						&& (display.currentCapacity == 0)
 					display.setText(e.getActionCommand());
+//					display.nullify();				
+//					display.addSymbol((e.getActionCommand());
 				else display.setText(display.getText() + e.getActionCommand());
+//				else display.addSymbol((e.getActionCommand());
 			}
 			else {
 				if (right_operator_input_flag == 0) {
 					right_operator_input_flag ^= 1;
 					display.setText(e.getActionCommand());
-					
+//					display.nullify();				
+//					display.addSymbol((e.getActionCommand());					
 				}
 				else if(display.getText().length() >= DISPLAY_SYMBOL_LIMIT) return;
+//				else if(display.currentCapacity == DISPLAY_SYMBOL_LIMIT) return;
 				else display.setText(display.getText() + e.getActionCommand());
+//				else display.addSymbol((e.getActionCommand());
 			}			
 		}		
 	}
@@ -302,6 +310,7 @@ public final class Calculator {
 			}
 			if(display.getText().indexOf(".") == - 1)
 				display.setText(display.getText() + ".");
+//			display.dotReverse();
 		}		
 	}
 	
@@ -313,6 +322,7 @@ public final class Calculator {
 				left_in_use = false;
 				left_operand = Double.valueOf(display.getText());
 				display.setText("0");
+//				display.nullify();
 			}
 			else {
 				right_operand = Double.valueOf(display.getText());
@@ -324,7 +334,7 @@ public final class Calculator {
 					runtimeExceptionCatch();
 				}
 				display.setText(String.valueOf(left_operand));
-				
+//				display.replace(String.valueOf(left_operand));
 				//Rounding display information if number is integer
 				if (left_operand == Math.floor(left_operand)){
 					if (display.getText().indexOf("E") == -1) {
