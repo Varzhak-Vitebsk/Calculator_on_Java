@@ -7,15 +7,15 @@ import java.util.ArrayList;
 
 //(0,0)	TOP INDENT
 //	L					R
-//	E	   --0-			I
-//	F	  |  / |		G
-//	T	  1 2  3		H
-//	 	  |/   |		T
-//	I	   --4-		
-//	N	  |  / |		I
-//	D	  5 6  7		N
-//	E	  |/   |   _	D
-//	N	   --8-   |_|	E
+//	E	  A--G--B		I	
+//	F	  |   / |		G
+//	T	  |  /  |		H
+//	 	  | /   |		T
+//	I	  C--H--D
+//	N	  |   / |		I
+//	D	  |  /  |		N
+//	E	  | /   |   _	D
+//	N	  E--J--F  |_|	E
 //	T					N
 //		BOTTOM INDENT	T
 
@@ -29,7 +29,7 @@ abstract class Symbol {
 	static final int LEFT_INDENT = 2;
 	static final int TOP_INDENT = 2;
 	static final int BOTTOM_INDENT = 2;
-	static final int CORNER_INDENT = 1; //Empty space between lines
+	static final int CORNER_INDENT = 1; //Empty space between lines in the corners
 	static final int DOT_SIZE = 2;
 
 	public Symbol(Dimension symbol_block_size, String symbol) {

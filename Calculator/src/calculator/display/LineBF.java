@@ -2,9 +2,9 @@ package calculator.display;
 
 import java.awt.Graphics;
 
-final class Line3 extends Line {
+final class LineBF extends Line {
 
-	public Line3(boolean use_main_color) {
+	public LineBF(boolean use_main_color) {
 		super(use_main_color);
 	}
 
@@ -15,12 +15,12 @@ final class Line3 extends Line {
 		g.drawLine(x - Symbol.RIGHT_INDENT
 				, y + Symbol.TOP_INDENT + Symbol.CORNER_INDENT
 				, x - Symbol.RIGHT_INDENT
-				, y + Symbol.TOP_INDENT  + length - Symbol.CORNER_INDENT);
+				, y + Symbol.TOP_INDENT  + 2 * length - Symbol.CORNER_INDENT);
 		//Inner line
 		if(USE_INNER_LINE)
 			g.drawLine(x - Symbol.RIGHT_INDENT - LINE_INDENT_X
 				, y + Symbol.TOP_INDENT + Symbol.CORNER_INDENT + LINE_INDENT_Y
 				, x - Symbol.RIGHT_INDENT - LINE_INDENT_X
-				, y + Symbol.TOP_INDENT  + length - Symbol.CORNER_INDENT - LINE_INDENT_Y);
+				, y + Symbol.TOP_INDENT  + 2 * length - Symbol.CORNER_INDENT - LINE_INDENT_Y);
 	}
 }

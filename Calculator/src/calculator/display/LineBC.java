@@ -2,9 +2,9 @@ package calculator.display;
 
 import java.awt.Graphics;
 
-final class Line2 extends Line {
+final class LineBC extends Line {
 
-	public Line2(boolean use_main_color) {
+	public LineBC(boolean use_main_color) {
 		super(use_main_color);
 	}
 

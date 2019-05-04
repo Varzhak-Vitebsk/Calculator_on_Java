@@ -2,27 +2,27 @@ package calculator.display;
 
 import java.awt.Dimension;
 
-final class DigitZero extends Symbol {
+final class SymbolMinus extends Symbol {
 
-	public DigitZero(Dimension symbol_size, String symbol) {
+	public SymbolMinus(Dimension symbol_size, String symbol) {
 		super(symbol_size, symbol);
-		Line line = new Line0(true);
+		Line line = new LineAB(false);
 		symbol_draw_map.add(line);
-		line = new Line1(true);
+		line = new LineAC(false);
 		symbol_draw_map.add(line);
-		line = new Line2(false);
+		line = new LineBC(false);
 		symbol_draw_map.add(line);
-		line = new Line3(true);
+		line = new LineBD(false);
 		symbol_draw_map.add(line);
-		line = new Line4(false);
+		line = new LineCD(true);
 		symbol_draw_map.add(line);
-		line = new Line5(true);
+		line = new LineCE(false);
 		symbol_draw_map.add(line);
-		line = new Line6(false);
+		line = new LineDE(false);
 		symbol_draw_map.add(line);
-		line = new Line7(true);
+		line = new LineDF(false);
 		symbol_draw_map.add(line);
-		line = new Line8(true);
+		line = new LineEF(false);
 		symbol_draw_map.add(line);
 	}
 
