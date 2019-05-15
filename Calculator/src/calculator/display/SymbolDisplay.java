@@ -23,7 +23,7 @@ public final class SymbolDisplay extends JPanel {
 	private HashMap<String, Symbol> symbols;
 
 	public SymbolDisplay() {
-		setPreferredSize(new Dimension(Calculator.MIN_FRAME_WIDTH, 22));
+		setPreferredSize(new Dimension(Calculator.MIN_FRAME_WIDTH - 10, 22)); //Do smth with display width
 		symbol_block_size = new Dimension(this.getPreferredSize().height, this.getPreferredSize().height);
 		display_capacity = this.getPreferredSize().width / symbol_block_size.width - 1;
 		display_queue = new ArrayList<DisplaySymbolBlock>(display_capacity);
@@ -89,7 +89,7 @@ public final class SymbolDisplay extends JPanel {
         for(var displaySymbolBlock: display_queue) 
         	displaySymbolBlock.draw(g
         		, position++
-        		, this.getWidth() - (display_capacity - 1) * symbol_block_size.width
+        		, this.getWidth() - 3 - (display_capacity - 1) * symbol_block_size.width //Do smth with symbol positioning
         		, 0);
     }
 	
@@ -176,7 +176,7 @@ public final class SymbolDisplay extends JPanel {
 		int dot_pos = s.indexOf(Symbol.SYMBOL_DOT);
 		int has_dot = dot_pos < 0? 0: 1;
 		for(int s_ind = 0, display_ind = display_capacity - (s.length() - has_dot);
-				s_ind < s.length() && (display_ind < display_capacity && display_ind > 0);
+				s_ind < s.length() && (display_ind < display_capacity && display_ind >= 0);
 				++s_ind, ++display_ind) {
 			String curr_symbol = s.substring(s_ind, s_ind + 1);
 			if(curr_symbol.equals(Symbol.SYMBOL_DOT)) {
@@ -185,6 +185,7 @@ public final class SymbolDisplay extends JPanel {
 			}
 			display_queue.get(display_ind).setSymbol(symbols.get(curr_symbol));
 		}
+		if (dot_pos == display_capacity) display_queue.get(display_capacity - 1).activateDot();
 		repaint();
 	}
 	
@@ -207,12 +208,12 @@ public final class SymbolDisplay extends JPanel {
 		
 		if (is_pos_infinity) return Double.toString(Double.POSITIVE_INFINITY);
 		if (is_neg_infinity) return Double.toString(Double.NEGATIVE_INFINITY);
-		String result = new String("");
+		StringBuilder result = new StringBuilder("");
 		for (var displaySymbolBlock : display_queue) {
-			result = result + displaySymbolBlock.getSymbolObj().getSymbol();
-			if (displaySymbolBlock.hasDot()) result = result + Symbol.SYMBOL_DOT;
+			result.append(displaySymbolBlock.getSymbolObj().getSymbol());
+			if (displaySymbolBlock.hasDot()) result.append(Symbol.SYMBOL_DOT);
 		}
-		return result;
+		return result.toString();
 	}
 	
 	public void nullify() {

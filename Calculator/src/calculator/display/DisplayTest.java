@@ -18,8 +18,8 @@ public class DisplayTest {
 	
 	private JFrame main_frame;
 	private SymbolDisplay display;
-//	private double[] test_cases = {0, -0, 12, -12, 0.0, -0.0, 0.13, -0.13, 1.13, -1.13, 1e-9d, -1e-9d, 1e137, Double.NaN, -Double.NaN, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY};
-	private double[] test_cases = {105.83333333333333};
+//	private double[] test_cases = {0, -0, 12, -12, 90., -0.0, .13, -0.13, 1.13, -1.13, 1e-9d, -1e-9d, 1e137, Double.NaN, -Double.NaN, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY};
+	private double[] test_cases = {105.83333333333333, 1234567890.};
 	
 	public DisplayTest() {
 		main_frame = new JFrame("Calculator Display Test");
@@ -42,8 +42,8 @@ public class DisplayTest {
 		main_frame.setVisible(true);
 		JOptionPane.showMessageDialog(new JFrame(), "Test initialization: 0", "Dialog",
 		        JOptionPane.INFORMATION_MESSAGE);
-		display.replace("0123456789");
-		JOptionPane.showMessageDialog(new JFrame(), "Test Digits: 0123456789", "Dialog",
+		display.replace("0123456789.");
+		JOptionPane.showMessageDialog(new JFrame(), "Test Digits: 0123456789.", "Dialog",
 		        JOptionPane.INFORMATION_MESSAGE);
 		display.nullify();
 		JOptionPane.showMessageDialog(new JFrame(), "Test nullify: 0", "Dialog",
