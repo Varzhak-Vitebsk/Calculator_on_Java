@@ -15,8 +15,8 @@ class DisplaySymbolBlock {
 		current_symbol = s;
 	}
 	
-	public String getSymbol() {
-		return current_symbol.getSymbol();
+	public Symbol getSymbolObj() {
+		return current_symbol;
 	}
 	
 	public void draw(Graphics g, int position, int right_top_x, int right_top_y) {
@@ -33,5 +33,10 @@ class DisplaySymbolBlock {
 	
 	public boolean hasDot() {
 		return is_dot_active;
+	}
+	
+	public void copy(DisplaySymbolBlock symbol_block) {
+		current_symbol = symbol_block.getSymbolObj();
+		is_dot_active = symbol_block.hasDot();
 	}
 }

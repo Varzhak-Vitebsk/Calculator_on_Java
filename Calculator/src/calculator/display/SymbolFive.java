@@ -4,8 +4,8 @@ import java.awt.Dimension;
 
 final class SymbolFive extends Symbol {
 
-	public SymbolFive(Dimension symbol_block_size, String symbol) {
-		super(symbol_block_size, symbol);
+	public SymbolFive(Dimension symbol_block_size) {
+		super(symbol_block_size, Symbol.SYMBOL_FIVE);
 		Line line = new LineAB(true);
 		symbol_draw_map.add(line);
 		line = new LineAC(true);

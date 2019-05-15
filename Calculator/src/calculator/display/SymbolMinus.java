@@ -4,8 +4,8 @@ import java.awt.Dimension;
 
 final class SymbolMinus extends Symbol {
 
-	public SymbolMinus(Dimension symbol_size, String symbol) {
-		super(symbol_size, symbol);
+	public SymbolMinus(Dimension symbol_size) {
+		super(symbol_size, Symbol.SYMBOL_MINUS);
 		Line line = new LineAB(false);
 		symbol_draw_map.add(line);
 		line = new LineAC(false);

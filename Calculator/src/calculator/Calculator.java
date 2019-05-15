@@ -1,5 +1,6 @@
 package calculator;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -37,15 +38,15 @@ public final class Calculator {
 	private double left_operand, right_operand;
 	private boolean left_in_use, compute_in_progress;
 	private byte right_operator_input_flag;
-	private JLabel display;
-//	private SymbolDisplay display;
+//	private JLabel display;
+	private SymbolDisplay display;
 	private Object current_operator_object;
 	private JButton clear_button;
 	
 	public static final int MIN_FRAME_WIDTH = 270;
-	public static final int MIN_FRAME_HEIGHT = 200;
+	public static final int MIN_FRAME_HEIGHT = 205;
 	public static final int PART_OF_DEVICE_DISPLAY = 3;
-	private final int SIZE_OF_DISPLAY_FONT = 20;
+//	private final int SIZE_OF_DISPLAY_FONT = 20;
 	private final int BORDER_OF_BACKPANEL = 5;
 	private final int BORDER_OF_INNERPANEL = 1;
 	private final int DISPLAY_SYMBOL_LIMIT = 20;
@@ -83,15 +84,19 @@ public final class Calculator {
 	private void createStandardUI(JPanel back_panel) {
 		// Creates standard UI which includes display, digit buttons and basic operator buttons 
 		// Creates and fills display panel
-		JPanel display_panel = new JPanel(new GridBagLayout());
-		display_panel.setBorder(BorderFactory.createLineBorder(Color.black));
-		display = new JLabel("0", SwingConstants.RIGHT);
-//		display = new SymbolDisplay();
-		display.setFont(new Font(Font.MONOSPACED, Font.BOLD, SIZE_OF_DISPLAY_FONT));
+//		JPanel display_panel = new JPanel(new GridBagLayout());
+//		display_panel.setBorder(BorderFactory.createLineBorder(Color.black));
+//		display = new JLabel("0", SwingConstants.RIGHT);
+		display = new SymbolDisplay();
+		display.setSize(MIN_FRAME_WIDTH, 300);
+//		display.setFont(new Font(Font.MONOSPACED, Font.BOLD, SIZE_OF_DISPLAY_FONT));
+		display.setBorder(BorderFactory.createLineBorder(Color.black));
 		GridBagConstraints constraits = new GridBagConstraints();
 		constraits.fill = GridBagConstraints.HORIZONTAL;	
-		constraits.weightx = 0.5;		
-		display_panel.add(display, constraits);
+		constraits.weightx = 1.0;		
+//		display_panel.setSize(MIN_FRAME_WIDTH, 300);
+//		display_panel.add(display, constraits);
+		constraits.weightx = .5;
 		
 		// Creates and fills digit buttons panel
 		JPanel symbol_buttons_panel = new JPanel(new GridBagLayout());
@@ -112,7 +117,7 @@ public final class Calculator {
 					.put(KeyStroke.getKeyStroke("released " + String.valueOf(ind - 3 * row)), "released");
 				button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
 				.put(KeyStroke.getKeyStroke("NUMPAD" + String.valueOf(ind - 3 * row)), "pressed");
-			button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+				button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
 				.put(KeyStroke.getKeyStroke("released NUMPAD" + String.valueOf(ind - 3 * row)), "released");
 				constraits.gridy = row;
 				symbol_buttons_panel.add(button, constraits);
@@ -235,14 +240,18 @@ public final class Calculator {
 			.put(KeyStroke.getKeyStroke("released ENTER"), "released");
 		operator_buttons_panel.add(button, constraits);		
 		
-		// Fills frame back panel		
-		constraits.gridy = 0;		
-		constraits.gridwidth = 5;
-		constraits.insets = new Insets(BORDER_OF_BACKPANEL
+		// Fills frame back panel
+		GridBagConstraints display_constraits = new GridBagConstraints();
+		display_constraits.gridy = 0;		
+		display_constraits.gridwidth = 5;
+		display_constraits.weighty = 1;
+		display_constraits.fill = GridBagConstraints.BOTH;
+		display_constraits.insets = new Insets(BORDER_OF_BACKPANEL
 				, BORDER_OF_BACKPANEL
 				, BORDER_OF_BACKPANEL
 				, BORDER_OF_BACKPANEL);
-		back_panel.add(display_panel, constraits);		
+//		back_panel.add(display_panel, display_constraits);
+		back_panel.add(display, display_constraits);
 		constraits.gridy = 1;
 		constraits.gridwidth = 3;
 		back_panel.add(symbol_buttons_panel, constraits);
@@ -263,37 +272,41 @@ public final class Calculator {
 		@Override
 		public void actionPerformed(ActionEvent e) {			
 			if(left_in_use) {
-				if(display.getText().length() >= DISPLAY_SYMBOL_LIMIT) return;
-//				if(display.currentCapacity >= display.maxCapacity) return;
+//				if(display.getText().length() >= DISPLAY_SYMBOL_LIMIT) return;
+				if(display.currentCapacity() >= display.maxCapacity()) return;
 				if(!compute_in_progress) {
-					display.setText(e.getActionCommand());
-//					display.nullify();
-//					display.addSymbol((e.getActionCommand());
+//					display.setText(e.getActionCommand());
+					display.nullify();
+					display.addSymbol(e.getActionCommand());
 					compute_in_progress = true;
 					return;
 				}
-				if((left_operand == 0)
-						&& (display.getText().indexOf(".") == - 1)
-//						&& (display.dotPosition() = -1)
-						&& (Double.valueOf(display.getText()) == 0))
-//						&& (display.currentCapacity == 0)
-					display.setText(e.getActionCommand());
-//					display.nullify();				
-//					display.addSymbol((e.getActionCommand());
-				else display.setText(display.getText() + e.getActionCommand());
-//				else display.addSymbol((e.getActionCommand());
+				if((left_operand == 0) 
+//						&& (display.getText().indexOf(".") == - 1)
+						&& (display.dotPosition() == -1)
+//						&& (Double.valueOf(display.getText()) == 0))
+						&& (display.currentCapacity() == 0)) {
+//					display.setText(e.getActionCommand());
+					display.nullify();				
+					display.addSymbol(e.getActionCommand());
+				}
+				else {
+					display.addSymbol(e.getActionCommand());
+					return;
+				}				
+//				else display.setText(display.getText() + e.getActionCommand());
 			}
 			else {
 				if (right_operator_input_flag == 0) {
 					right_operator_input_flag ^= 1;
-					display.setText(e.getActionCommand());
-//					display.nullify();				
-//					display.addSymbol((e.getActionCommand());					
+//					display.setText(e.getActionCommand());
+					display.nullify();				
+					display.addSymbol(e.getActionCommand());					
 				}
-				else if(display.getText().length() >= DISPLAY_SYMBOL_LIMIT) return;
-//				else if(display.currentCapacity == DISPLAY_SYMBOL_LIMIT) return;
-				else display.setText(display.getText() + e.getActionCommand());
-//				else display.addSymbol((e.getActionCommand());
+//				else if(display.getText().length() >= DISPLAY_SYMBOL_LIMIT) return;
+				else if(display.currentCapacity() == DISPLAY_SYMBOL_LIMIT) return;
+//				else display.setText(display.getText() + e.getActionCommand());
+				else display.addSymbol(e.getActionCommand());
 			}			
 		}		
 	}
@@ -304,13 +317,13 @@ public final class Calculator {
 		public void actionPerformed(ActionEvent e) {
 			if(display.getText().contains("NaN")) return;
 			if(display.getText().contains("Infinity")) return;
-			if(display.getText().indexOf(".") == display.getText().length() - 1) {
-				display.setText(display.getText().substring(0, display.getText().length() - 1));
-				return;
-			}
-			if(display.getText().indexOf(".") == - 1)
-				display.setText(display.getText() + ".");
-//			display.dotReverse();
+//			if(display.getText().indexOf(".") == display.getText().length() - 1) {
+//				display.setText(display.getText().substring(0, display.getText().length() - 1));
+//				return;
+//			}
+//			if(display.getText().indexOf(".") == - 1)
+//				display.setText(display.getText() + ".");
+			display.dotReverse();
 		}		
 	}
 	
@@ -321,8 +334,8 @@ public final class Calculator {
 			if(left_in_use) {
 				left_in_use = false;
 				left_operand = Double.valueOf(display.getText());
-				display.setText("0");
-//				display.nullify();
+//				display.setText("0");
+				display.nullify();
 			}
 			else {
 				right_operand = Double.valueOf(display.getText());
@@ -333,12 +346,14 @@ public final class Calculator {
 				}catch(ClassCastException exception) {
 					runtimeExceptionCatch();
 				}
-				display.setText(String.valueOf(left_operand));
-//				display.replace(String.valueOf(left_operand));
+//				display.setText(String.valueOf(left_operand));
+				display.replace(String.valueOf(left_operand));
 				//Rounding display information if number is integer
 				if (left_operand == Math.floor(left_operand)){
 					if (display.getText().indexOf("E") == -1) {
-						display.setText(display.getText().
+//						display.setText(display.getText().
+//								substring(0, display.getText().length() - 2));
+						display.replace(display.getText().
 								substring(0, display.getText().length() - 2));
 					}
 				}
@@ -364,6 +379,7 @@ public final class Calculator {
 			}			
 			left_in_use = true;
 			compute_in_progress = false;
+//			left_operand = Double.valueOf(display.getText());
 			left_operand = 0;
 			current_operator_object = null;
 		}
@@ -378,7 +394,8 @@ public final class Calculator {
 			right_operator_input_flag = 0;
 			left_in_use = true;
 			current_operator_object = null;
-			display.setText("0");
+//			display.setText("0");
+			display.nullify();
 		}
 	}
 	
@@ -386,12 +403,13 @@ public final class Calculator {
 
 		@Override
 		public void actionPerformed(ActionEvent event) {
-			if(display.getText().length() == 1)
-				display.setText("0");
-			if(display.getText().length() > 1)
-				display.setText(display.getText().substring(0, display.getText().length() - 1));
-				if(display.getText().indexOf(".") == display.getText().length() - 1)
-					display.setText(display.getText().substring(0, display.getText().length() - 1));
+//			if(display.getText().length() == 1)
+//				display.setText("0");
+//			if(display.getText().length() > 1)
+//				display.setText(display.getText().substring(0, display.getText().length() - 1));
+//				if(display.getText().indexOf(".") == display.getText().length() - 1)
+//					display.setText(display.getText().substring(0, display.getText().length() - 1));
+			display.removeSymbol();
 			if(left_in_use) left_operand = Double.valueOf(display.getText());
 			else right_operand = Double.valueOf(display.getText());
 		}

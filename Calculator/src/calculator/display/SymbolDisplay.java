@@ -18,46 +18,48 @@ public final class SymbolDisplay extends JPanel {
 	private int display_capacity;
 	private ArrayList<DisplaySymbolBlock> display_queue;
 	private int current_symbol_block;
-//	private boolean is_negative;
+	private boolean is_pos_infinity;
+	private boolean is_neg_infinity;
 	private HashMap<String, Symbol> symbols;
 
 	public SymbolDisplay() {
-		setPreferredSize(new Dimension(Calculator.MIN_FRAME_WIDTH, 23));
+		setPreferredSize(new Dimension(Calculator.MIN_FRAME_WIDTH, 22));
 		symbol_block_size = new Dimension(this.getPreferredSize().height, this.getPreferredSize().height);
-		display_capacity = this.getPreferredSize().width / symbol_block_size.width;
+		display_capacity = this.getPreferredSize().width / symbol_block_size.width - 1;
 		display_queue = new ArrayList<DisplaySymbolBlock>(display_capacity);
 		symbols = new HashMap<String, Symbol>();
-		symbols.put("9", new SymbolNine(symbol_block_size, "9"));
-		symbols.put("8", new SymbolEight(symbol_block_size, "8"));
-		symbols.put("7", new SymbolSeven(symbol_block_size, "7"));
-		symbols.put("6", new SymbolSix(symbol_block_size, "6"));
-		symbols.put("5", new SymbolFive(symbol_block_size, "5"));
-		symbols.put("4", new SymbolFour(symbol_block_size, "4"));
-		symbols.put("3", new SymbolThree(symbol_block_size, "3"));
-		symbols.put("2", new SymbolTwo(symbol_block_size, "2"));
-		symbols.put("1", new SymbolOne(symbol_block_size, "1"));
-		symbols.put("0", new SymbolZero(symbol_block_size, "0"));
-		symbols.put(" ", new SymbolEmpty(symbol_block_size, " "));
-		symbols.put("-", new SymbolMinus(symbol_block_size, "-"));
-		symbols.put("N", new SymbolN(symbol_block_size, "N"));
-		symbols.put("a", new SymbolA(symbol_block_size, "a"));
+		symbols.put(Symbol.SYMBOL_NINE, new SymbolNine(symbol_block_size));
+		symbols.put(Symbol.SYMBOL_EIGHT, new SymbolEight(symbol_block_size));
+		symbols.put(Symbol.SYMBOL_SEVEN, new SymbolSeven(symbol_block_size));
+		symbols.put(Symbol.SYMBOL_SIX, new SymbolSix(symbol_block_size));
+		symbols.put(Symbol.SYMBOL_FIVE, new SymbolFive(symbol_block_size));
+		symbols.put(Symbol.SYMBOL_FOUR, new SymbolFour(symbol_block_size));
+		symbols.put(Symbol.SYMBOL_THREE, new SymbolThree(symbol_block_size));
+		symbols.put(Symbol.SYMBOL_TWO, new SymbolTwo(symbol_block_size));
+		symbols.put(Symbol.SYMBOL_ONE, new SymbolOne(symbol_block_size));
+		symbols.put(Symbol.SYMBOL_ZERO, new SymbolZero(symbol_block_size));
+		symbols.put(Symbol.SYMBOL_EMPTY, new SymbolEmpty(symbol_block_size));
+		symbols.put(Symbol.SYMBOL_MINUS, new SymbolMinus(symbol_block_size));
+		symbols.put(Symbol.SYMBOL_N, new SymbolN(symbol_block_size));
+		symbols.put(Symbol.SYMBOL_A, new SymbolA(symbol_block_size));
+//		symbols.put("e", new SymbolE(symbol_block_size));
+		symbols.put(Symbol.SYMBOL_E, new SymbolE(symbol_block_size));
+		symbols.put(Symbol.SYMBOL_F, new SymbolF(symbol_block_size));
+		symbols.put(Symbol.SYMBOL_I, new SymbolI(symbol_block_size));
 		initDisplay();
 		nullify();
 	}
 
 	public SymbolDisplay(LayoutManager layout) {
 		super(layout);
-		// TODO Auto-generated constructor stub
 	}
 
 	public SymbolDisplay(boolean isDoubleBuffered) {
 		super(isDoubleBuffered);
-		// TODO Auto-generated constructor stub
 	}
 
 	public SymbolDisplay(LayoutManager layout, boolean isDoubleBuffered) {
 		super(layout, isDoubleBuffered);
-		// TODO Auto-generated constructor stub
 	}
 	
 	public int maxCapacity() {
@@ -67,7 +69,7 @@ public final class SymbolDisplay extends JPanel {
 	public int currentCapacity() {
 		int capacity = 0;
 		for(var displaySymbolBlock: display_queue) {
-			if(!displaySymbolBlock.getSymbol().isEmpty()) ++capacity;
+			if(!displaySymbolBlock.getSymbolObj().getSymbol().contentEquals(Symbol.SYMBOL_EMPTY)) ++capacity;
 		}
 		return capacity;
 	}
@@ -94,18 +96,42 @@ public final class SymbolDisplay extends JPanel {
 	public void dotReverse() {
 		int dot_position = dotPosition();
 		if(dot_position == -1) display_queue.get(display_capacity - 1).activateDot();
-		else if (dot_position == display_capacity - 1) display_queue.get(display_capacity - 1).deactivateDot();		
+		else if (dot_position == display_capacity - 1) display_queue.get(display_capacity - 1).deactivateDot();
+		repaint();
 	}
 	
-	public int addSymbol(String s) {
-		//Add symbol to display stack, move other symbols to left
-		if(current_symbol_block < 0) return current_symbol_block;
-		display_queue.get(current_symbol_block).setSymbol(symbols.get(s));
-		return current_symbol_block--;
+	public void addSymbol(String s) {
+		//Adds symbol to display stack, moves other symbols to left
+		if(current_symbol_block <= 0) return;
+		if((current_symbol_block == display_capacity - 1)
+				&& !(display_queue.get(current_symbol_block).hasDot())
+				&& display_queue.get(current_symbol_block).getSymbolObj().getSymbol().contentEquals(Symbol.SYMBOL_ZERO)) {
+			display_queue.get(current_symbol_block).setSymbol(symbols.get(s));
+		}
+		else{
+			for(int index = current_symbol_block; index < display_capacity; ++index) {
+				display_queue.get(index - 1).copy(display_queue.get(index));
+			}
+			display_queue.get(display_capacity - 1).setSymbol(symbols.get(s));
+			display_queue.get(display_capacity - 1).deactivateDot();
+			--current_symbol_block;
+		}		
+		repaint();		 
 	}
 	
 	public void removeSymbol() {
-		//Remove symbol from display stack, move other symbols to right
+		//Removes symbol from display stack, moves other symbols to right
+		if(current_symbol_block == display_capacity - 1) {
+			nullify();
+			return;
+		}
+		for(int index = display_capacity - 1; index > current_symbol_block; --index) {
+			display_queue.get(index).copy(display_queue.get(index - 1));
+		}
+		display_queue.get(current_symbol_block).setSymbol(symbols.get(Symbol.SYMBOL_EMPTY));
+		display_queue.get(current_symbol_block).deactivateDot();
+		++current_symbol_block;
+		repaint();
 	}
 	
 	public void replace(String s) {
@@ -127,22 +153,33 @@ public final class SymbolDisplay extends JPanel {
 //				followed by decimal digits representing the fractional part of a, followed by the letter 'E' ('\u005Cu0045'), followed by a representation of n as a decimal integer, as produced by the method 
 		
 		nullify();
-		if(s.contentEquals("NaN")) {
+		if(s.contentEquals(Double.toString(Double.NaN))) {
 			for(int s_ind = 0; s_ind < s.length(); ++s_ind) {
 				display_queue.get(display_capacity - s.length() + s_ind).setSymbol(symbols.get(s.substring(s_ind, s_ind + 1)));
 			}
 			repaint();
 			return;
 		}
-//		if(s.startsWith("-")) is_negative = true;
-//		else is_negative = false;
-		int dot_pos = s.indexOf(".");
+		if(s.replaceAll("\\W", "").contentEquals(Double.toString(Double.POSITIVE_INFINITY))) {
+			int display_ind = display_capacity - 1;
+			display_queue.get(display_ind).setSymbol(symbols.get(Symbol.SYMBOL_F));
+			display_queue.get(--display_ind).setSymbol(symbols.get(Symbol.SYMBOL_N));
+			display_queue.get(--display_ind).setSymbol(symbols.get(Symbol.SYMBOL_I));
+			if(s.startsWith(Symbol.SYMBOL_MINUS)) {
+				display_queue.get(--display_ind).setSymbol(symbols.get(Symbol.SYMBOL_MINUS));
+				is_neg_infinity = true;
+			}
+			else is_pos_infinity = true;
+			repaint();
+			return;
+		}
+		int dot_pos = s.indexOf(Symbol.SYMBOL_DOT);
 		int has_dot = dot_pos < 0? 0: 1;
 		for(int s_ind = 0, display_ind = display_capacity - (s.length() - has_dot);
 				s_ind < s.length() && (display_ind < display_capacity && display_ind > 0);
 				++s_ind, ++display_ind) {
 			String curr_symbol = s.substring(s_ind, s_ind + 1);
-			if(curr_symbol.equals(".")) {
+			if(curr_symbol.equals(Symbol.SYMBOL_DOT)) {
 				display_queue.get(--display_ind).activateDot();
 				continue;
 			}
@@ -152,7 +189,7 @@ public final class SymbolDisplay extends JPanel {
 	}
 	
 	public String getText() {
-		
+		//Return display representation as a String
 //		Have to handle these:
 //		1.If the argument is NaN, the result is the string "NaN". 
 //		2.Otherwise, the result is a string that represents the sign and magnitude (absolute value) of the argument.
@@ -168,32 +205,34 @@ public final class SymbolDisplay extends JPanel {
 //				The magnitude is then represented as the integer part of a, as a single decimal digit, followed by '.'('\u005Cu002E'),
 //				followed by decimal digits representing the fractional part of a, followed by the letter 'E' ('\u005Cu0045'), followed by a representation of n as a decimal integer, as produced by the method
 		
+		if (is_pos_infinity) return Double.toString(Double.POSITIVE_INFINITY);
+		if (is_neg_infinity) return Double.toString(Double.NEGATIVE_INFINITY);
 		String result = new String("");
 		for (var displaySymbolBlock : display_queue) {
-			result = result + displaySymbolBlock.getSymbol();
-			if (displaySymbolBlock.hasDot()) result = result + ".";
+			result = result + displaySymbolBlock.getSymbolObj().getSymbol();
+			if (displaySymbolBlock.hasDot()) result = result + Symbol.SYMBOL_DOT;
 		}
 		return result;
 	}
 	
 	public void nullify() {
 		for(var displaySymbolBlock: display_queue) { 
-			displaySymbolBlock.setSymbol(symbols.get(" "));
+			displaySymbolBlock.setSymbol(symbols.get(Symbol.SYMBOL_EMPTY));
 			displaySymbolBlock.deactivateDot();
 		}
-		display_queue.get(display_capacity - 1).setSymbol(symbols.get("0"));
+		display_queue.get(display_capacity - 1).setSymbol(symbols.get(Symbol.SYMBOL_ZERO));
 		current_symbol_block = display_capacity - 1;
-//		is_negative = false;
+		is_pos_infinity = false;
+		is_neg_infinity = false;
 		repaint();
 	}
 	
 	private void initDisplay() {
 		for(int ind = 0; ind < display_capacity; ++ind) {
 			var displaySymbolBlock = new DisplaySymbolBlock();
-			displaySymbolBlock.setSymbol(symbols.get(" "));			
+			displaySymbolBlock.setSymbol(symbols.get(Symbol.SYMBOL_EMPTY));			
 			display_queue.add(displaySymbolBlock);
 		}
 		current_symbol_block = display_capacity;
-//		is_negative = false;
 	}
 }

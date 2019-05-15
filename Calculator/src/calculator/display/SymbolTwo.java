@@ -4,8 +4,8 @@ import java.awt.Dimension;
 
 final class SymbolTwo extends Symbol {
 
-	public SymbolTwo(Dimension symbol_block_size, String symbol) {
-		super(symbol_block_size, symbol);
+	public SymbolTwo(Dimension symbol_block_size) {
+		super(symbol_block_size, Symbol.SYMBOL_TWO);
 		Line line = new LineAB(true);
 		symbol_draw_map.add(line);
 		line = new LineAC(false);
@@ -25,5 +25,4 @@ final class SymbolTwo extends Symbol {
 		line = new LineEF(true);
 		symbol_draw_map.add(line);
 	}
-
 }

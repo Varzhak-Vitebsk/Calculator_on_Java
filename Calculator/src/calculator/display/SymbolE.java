@@ -2,10 +2,10 @@ package calculator.display;
 
 import java.awt.Dimension;
 
-final class SymbolSix extends Symbol {
+final class SymbolE extends Symbol {
 
-	public SymbolSix(Dimension symbol_block_size) {
-		super(symbol_block_size, Symbol.SYMBOL_SIX);
+	public SymbolE(Dimension symbol_size) {
+		super(symbol_size, Symbol.SYMBOL_E);
 		Line line = new LineAB(true);
 		symbol_draw_map.add(line);
 		line = new LineAC(true);
@@ -20,9 +20,10 @@ final class SymbolSix extends Symbol {
 		symbol_draw_map.add(line);
 		line = new LineDE(false);
 		symbol_draw_map.add(line);
-		line = new LineDF(true);
+		line = new LineDF(false);
 		symbol_draw_map.add(line);
 		line = new LineEF(true);
 		symbol_draw_map.add(line);
 	}
+
 }

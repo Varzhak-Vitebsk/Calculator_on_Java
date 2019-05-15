@@ -1,8 +1,12 @@
 package calculator.display;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.util.ArrayList;
 
 import javax.swing.JFrame;
@@ -14,8 +18,8 @@ public class DisplayTest {
 	
 	private JFrame main_frame;
 	private SymbolDisplay display;
-//	private double[] test_cases = {0, -0, 12, -12, 0.0, -0.0, 0.13, -0.13, 1.13, -1.13, Double.NaN, -Double.NaN};
-	private double[] test_cases = {Double.NaN, -Double.NaN};
+//	private double[] test_cases = {0, -0, 12, -12, 0.0, -0.0, 0.13, -0.13, 1.13, -1.13, 1e-9d, -1e-9d, 1e137, Double.NaN, -Double.NaN, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY};
+	private double[] test_cases = {105.83333333333333};
 	
 	public DisplayTest() {
 		main_frame = new JFrame("Calculator Display Test");
@@ -48,6 +52,9 @@ public class DisplayTest {
 			display.replace(String.valueOf(d));
 			JOptionPane.showMessageDialog(new JFrame(), "Test replace: " + String.valueOf(d), "Dialog",
 					JOptionPane.INFORMATION_MESSAGE);
+			boolean get_result = (d == Double.valueOf(display.getText())) || (Double.isNaN(Double.valueOf(display.getText())));
+			JOptionPane.showMessageDialog(new JFrame(), "Test getText: " + String.valueOf(d) + " Res: " + get_result, "Dialog",
+					JOptionPane.INFORMATION_MESSAGE);			
 		}
 	}
 }
