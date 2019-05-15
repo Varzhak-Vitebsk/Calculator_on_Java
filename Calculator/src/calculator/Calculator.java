@@ -1,9 +1,7 @@
 package calculator;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.GridBagConstraints;
@@ -18,11 +16,9 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
-import javax.swing.SwingConstants;
 
 import calculator.buttons.OperatorButton;
 import calculator.buttons.OperatorDivideButton;
@@ -36,7 +32,7 @@ public final class Calculator {
 	
 	private JFrame main_frame;
 	private double left_operand, right_operand;
-	private boolean left_in_use, compute_in_progress;
+	private boolean left_in_use, compute_in_progress, dot_able;
 	private byte right_operator_input_flag;
 //	private JLabel display;
 	private SymbolDisplay display;
@@ -58,6 +54,7 @@ public final class Calculator {
 		right_operand = 0;
 		left_in_use = true;
 		compute_in_progress = false;
+		dot_able = true;
 		right_operator_input_flag = 0;
 		current_operator_object = null;
 		clear_button = null;
@@ -270,25 +267,28 @@ public final class Calculator {
 	private class SymbolButtonActionListener implements ActionListener{
 
 		@Override
-		public void actionPerformed(ActionEvent e) {			
+		public void actionPerformed(ActionEvent e) {	
+			dot_able = true;
 			if(left_in_use) {
 //				if(display.getText().length() >= DISPLAY_SYMBOL_LIMIT) return;
 				if(display.currentCapacity() >= display.maxCapacity()) return;
 				if(!compute_in_progress) {
 //					display.setText(e.getActionCommand());
-					display.nullify();
+					if(left_operand != 0) display.nullify();
 					display.addSymbol(e.getActionCommand());
 					compute_in_progress = true;
+					left_operand = Double.valueOf(display.getText());
 					return;
 				}
 				if((left_operand == 0) 
 //						&& (display.getText().indexOf(".") == - 1)
 						&& (display.dotPosition() == -1)
 //						&& (Double.valueOf(display.getText()) == 0))
-						&& (display.currentCapacity() == 0)) {
+						&& (display.currentCapacity() == 1)) {
 //					display.setText(e.getActionCommand());
 					display.nullify();				
 					display.addSymbol(e.getActionCommand());
+					left_operand = Double.valueOf(display.getText());
 				}
 				else {
 					display.addSymbol(e.getActionCommand());
@@ -323,7 +323,7 @@ public final class Calculator {
 //			}
 //			if(display.getText().indexOf(".") == - 1)
 //				display.setText(display.getText() + ".");
-			display.dotReverse();
+			if (dot_able) display.dotReverse();
 		}		
 	}
 	
@@ -379,8 +379,9 @@ public final class Calculator {
 			}			
 			left_in_use = true;
 			compute_in_progress = false;
+			dot_able = false;
 //			left_operand = Double.valueOf(display.getText());
-			left_operand = 0;
+//			left_operand = 0;
 			current_operator_object = null;
 		}
 	}
